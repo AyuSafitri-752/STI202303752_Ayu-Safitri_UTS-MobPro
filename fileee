@@ -1,0 +1,125 @@
+file  main.dart
+import 'package:flutter/material.dart';
+import 'pages/add_event_page.dart' as add_page;
+import 'pages/event_list_page.dart' as list_page;
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Event App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Event App Home'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                // Navigasi ke halaman tambah event
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => add_page.AddEventPage(
+                      onEventSaved: () {
+                        // Optional: callback jika ingin refresh list
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Tambah Event Baru'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Navigasi ke halaman daftar event
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const list_page.EventListPage(),
+                  ),
+                );
+              },
+              child: const Text('Lihat Daftar Event'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+folder  models/
+│   └── event_model.dart dengan kode berikut: class EventModel {
+  final String id;
+  final String title;
+  final String category;
+  final DateTime date;
+  final String description;
+  final List<String> imagePaths;
+  final List<String> videoPaths;
+
+  EventModel({
+    String? id,
+    required this.title,
+    required this.category,
+    required this.date,
+    required this.description,
+    this.imagePaths = const [],
+    this.videoPaths = const [],
+  }) : id = id ?? DateTime.now().toIso8601String();
+
+  // Convert EventModel to a Map
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'category': category,
+      'date': date.toIso8601String(),
+      'description': description,
+      'imagePaths': imagePaths,
+      'videoPaths': videoPaths,
+    };
+  }
+
+  // Create EventModel from a Map
+  factory EventModel.fromMap(Map<String, dynamic> map) {
+    return EventModel(
+      id: map['id'],
+      title: map['title'],
+      category: map['category'],
+      date: DateTime.parse(map['date']),
+      description: map['description'],
+      imagePaths: List<String>.from(map['imagePaths'] ?? []),
+      videoPaths: List<String>.from(map['videoPaths'] ?? []),
+    );
+  }
+}
